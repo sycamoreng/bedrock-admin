@@ -1,0 +1,45 @@
+@import "./fonts.css";
+@import "tailwindcss";
+@import "flowbite/src/themes/default";
+
+@theme {
+  --color-primary: #448DF2;
+  --color-primary-25: #EDF8FD;
+  --color-primary-50: #E8F1FD;
+  --color-primary-500: #0A445C;
+  --color-primary-600: #073042;
+  --color-primary-700: #062937;
+  --color-primary-800: #041B25;
+  --color-grayC6: #C6C5CA;
+  --color-gray8D: #8D8A95;
+  --color-gray67: #676472;
+  --color-gray44: #444444;
+  --color-gray75: #757575;
+  --color-custom-yellow: #FFFBEB;
+  --color-custom-light-green: #CFF7D3;
+  --color-custom-dark-green: #009951;
+}
+
+* {
+  font-family: 'Satoshi';
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+a {
+  /* color: var(--color-primary-500); */
+  font-size: 14px;
+}
+
+input {
+  outline: none;
+  font-family: 'Satoshi';
+  font-size: 12px;
+  color: var(--color-gray44);
+}
+
+button {
+  cursor: pointer;
+}
