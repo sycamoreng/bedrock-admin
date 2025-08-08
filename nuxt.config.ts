@@ -2,7 +2,7 @@ import tailwindcss from "@tailwindcss/vite";
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  compatibilityDate: '2024-11-01',
+  compatibilityDate: '2025-02-28',
   devtools: { enabled: true },
   modules: ['@nuxt/eslint', '@nuxt/image', '@nuxt/ui', "nuxt-phosphor-icons", "dayjs-nuxt", "@sidebase/nuxt-auth", "@pinia/nuxt"],
   css: ['~/assets/css/main.css'],

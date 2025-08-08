@@ -14,6 +14,8 @@
       </thead>
       <tbody>
         <tr v-for="(item, index) in partnerStore.partners" :key="index"
+          data-drawer-target="view-partner" data-drawer-show="view-partner"
+          data-drawer-placement="right" aria-controls="view-partner" @click="selectedPartner = item"
           class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 cursor-pointer">
           <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{item.user_id}}
           </th>
@@ -65,7 +67,15 @@
         </li>
       </ul>
     </nav>
-    <FormDrawer />
+    <FormDrawer uid="view-partner" title="View Partner" v-if="partnerStore?.partners?.length">
+      <div class="flex flex-row gap-x-3 items-center">
+        <img class="w-28 h-28 rounded-full object-cover" src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8cG9ydHJhaXR8ZW58MHx8MHx8fDA%3D" alt="" />
+        <div>
+          <p class="font-medium">{{`${selectedPartner?.first_name} ${selectedPartner?.last_name}`}}</p>
+          <p class="text-sm text-gray-400">{{selectedPartner?.email}}</p>
+        </div>
+      </div>
+    </FormDrawer>
   </div>
 </template>
 
@@ -75,6 +85,13 @@
   const partnerStore = usePartnerStore();
 
   onMounted(() => {
+    useFlowbite(() => {
+      initFlowbite();
+    })
+  });
+  onMounted(() => {
     partnerStore.getPartners();
   });
+
+  const selectedPartner = ref(null);
 </script>
