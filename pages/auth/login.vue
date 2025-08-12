@@ -1,7 +1,10 @@
 <template lang="">
   <div class="block md:flex h-screen">
     <div class="w-full md:w-1/2 py-5 px-8 md:px-16">
-      <p class="text-left font-bold">Bedrock Admin</p>
+      <!-- <p class="text-left font-bold">Bedrock Admin</p> -->
+      <div class="w-32 pt-8">
+        <img src="@/assets/images/logo-x.png" alt="">
+      </div>
       <div class="mt-20">
         <p class="text-3xl font-bold">Hello there,</p>
         <p>Sign in to access your dashboard.</p>
