@@ -1,6 +1,6 @@
 <template lang="">
   <div :id="uid"
-    class="fixed top-0 right-0 z-40 h-screen p-4 overflow-y-auto transition-transform translate-x-full bg-white w-[400px] dark:bg-gray-800"
+    class="fixed top-0 right-0 z-40 h-screen p-4 overflow-y-auto transition-transform translate-x-full bg-white w-[82vw] dark:bg-gray-800"
     tabindex="-1" aria-labelledby="drawer-right-label">
     <h5 id="drawer-right-label"
       class="inline-flex gap-1 items-center mb-4 text-base font-semibold text-gray-500 dark:text-gray-400">

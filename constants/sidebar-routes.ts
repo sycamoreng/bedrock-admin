@@ -13,8 +13,8 @@ const sidebarRoutes = [
         icon: "calendar",
       },
       {
-        name: "Apartments",
-        route: "/apartments",
+        name: "Properties",
+        route: "/properties",
         icon: "house",
       },
       {
@@ -22,22 +22,42 @@ const sidebarRoutes = [
         route: "/partners",
         icon: "users",
       },
+      {
+        name: "Discounts",
+        route: "/discounts",
+        icon: "seal-percent",
+      },
+      {
+        name: "Ancillary",
+        route: "/ancillary",
+        icon: "check-square-offset",
+      },
+    ],
+  },
+  {
+    name: "Settings",
+    subroutes: [
+      {
+        name: "Roles & Permissions",
+        route: "/permissions",
+        icon: "users-three",
+      },
+      {
+        name: "User management",
+        route: "/user-management",
+        icon: "user-plus",
+      },
+      {
+        name: "Channels",
+        route: "/channels",
+        icon: "globe",
+      },
     ],
   },
   {
     name: "Financials",
-    subroutes: [
-      {
-        name: "Expenses",
-        route: "/expenses",
-        icon: "chart-bar",
-      },
-      {
-        name: "Revenue",
-        route: "/revenue",
-        icon: "chart-line-up",
-      },
-    ],
+    route: "/financials",
+    icon: "currency-ngn",
   },
 ];
 

@@ -1,0 +1,84 @@
+<!-- eslint-disable vue/multi-word-component-names -->
+<template>
+  <div class="w-full overflow-x-auto border rounded-sm border-gray-200 bg-white">
+
+    <!-- Date Header -->
+    <div class="grid" :style="{ gridTemplateColumns: '200px ' + repeatCol }">
+      <div class="bg-gray-100 pt-4 font-medium text-sm text-center text-gray71">
+        Apartments
+      </div>
+
+      <div
+        v-for="day in timelineDays"
+        :key="day.valueOf()"
+        class="bg-white text-center p-2 border-r-[0.5px] border-gray-200 text-sm"
+      >
+        <p class="text-xs">{{ day.format('ddd') }}</p>
+        <p class="text-sm font-medium">{{ day.format('D MMM') }}</p>
+      </div>
+    </div>
+
+    <!-- Residences -->
+    <div v-for="residence in residences" :key="residence.id">
+      <div class="font-medium bg-gray-100 p-2 border-y-[0.5px] border-gray-200 text-sm">
+        {{ residence.name }}
+      </div>
+
+      <!-- Apartment Row -->
+      <div
+        v-for="apt in residence.apartments"
+        :key="apt.id"
+        class="relative grid border-b border-gray-200"
+        :style="{ gridTemplateColumns: '200px ' + repeatCol }"
+      >
+        <!-- Apartment Label -->
+        <div class="border-r-[0.5px] pl-2 pt-2 text-sm text-gray71 h-12">
+          {{ apt.name }}
+        </div>
+
+        <!-- Grid Cells -->
+        <div
+          v-for="day in timelineDays"
+          :key="day.valueOf()"
+          class="border-r-[0.5px] h-12 border-gray-200"
+        ></div>
+
+        <!-- OVERLAY (aligned exactly with the day columns) -->
+        <div
+          class="absolute inset-y-0"
+          :style="{ left: '200px', right: '0' }"
+        >
+          <ReservationBlock
+            v-for="res in filterReservationsByOverlap(apt.reservations, timelineDays)"
+            :key="res.id"
+            :reservation="res"
+            :timeline-days="timelineDays"
+            :day-width="120"
+          />
+        </div>
+      </div>
+    </div>
+
+  </div>
+</template>
+
+<script setup>
+const props = defineProps({
+  residences: Array,
+  timelineDays: Array
+})
+
+const filterReservationsByOverlap = (reservations, days) => {
+  if (!reservations || !days || days.length === 0) return []
+
+  const viewStart = days[0].startOf('day')
+  const viewEnd = days[days.length - 1].endOf('day')
+
+  return reservations.filter(res => {
+    return res.start.isBefore(viewEnd) && res.end.isAfter(viewStart)
+  })
+}
+
+const repeatCol = computed(() => `repeat(${props.timelineDays.length}, 120px)`)
+</script>
+

@@ -36,22 +36,22 @@
       <div class="px-4 pt-5">
         <div v-for="(item, index) in sidebar" :key="index">
           <NuxtLink :to="item.route"
-            class="flex flex-row items-center py-3 px-2 cursor-pointer hover:bg-primary-50 hover:text-primary hover:font-medium rounded-md transition"
-            :class="currentPage?.name === item?.name ? 'bg-primary-50 text-primary font-medium': 'text-primary-500'"
+            class="flex flex-row items-center py-3 px-2 cursor-pointer hover:bg-primary-25 hover:text-primary hover:font-medium rounded-md transition"
+            :class="currentPage?.name === item?.name ? 'bg-primary-25 text-primary font-medium': 'text-gray-500'"
             v-if="item.route">
             <div class="mr-3">
-              <SidebarIcon :icon="item.icon" />
+              <CustomIcon :icon="item.icon" />
             </div>
             <p class="text-sm">{{item.name}}</p>
           </NuxtLink>
           <div v-else class="py-3">
             <p class="text-xs text-gray-500 uppercase mb-2">{{item.name}}</p>
             <NuxtLink :to="subItem.route"
-              class="flex flex-row items-center py-3 px-2 cursor-pointer  hover:bg-primary-50 hover:text-primary hover:font-medium rounded-md transition"
-              :class="currentPage?.name === subItem?.name ? 'bg-primary-50 text-primary font-medium': 'text-primary-500'"
+              class="flex flex-row items-center py-3 px-2 cursor-pointer hover:bg-primary-25 hover:text-primary hover:font-medium rounded-md transition"
+              :class="currentPage?.name === subItem?.name ? 'bg-primary text-white font-medium': 'text-gray-500'"
               v-for="(subItem, subIndex) in item.subroutes" :key="subIndex">
               <div class="mr-3">
-                <SidebarIcon :icon="subItem.icon" />
+                <CustomIcon :icon="subItem.icon" />
               </div>
               <p class="text-sm">{{subItem.name}}</p>
             </NuxtLink>
@@ -61,10 +61,10 @@
       </div>
     </aside>
     <section class="w-full md:w-[82%] md:ml-[18%] relative">
-      <header class="w-full fixed bg-white h-16 p-5 border-b border-gray-100">
+      <header class="w-full fixed bg-white h-16 p-5 border-b border-gray-100 z-10">
         <p class="font-bold">{{currentPage?.name}}</p>
       </header>
-      <main class="bg-[#f7f7f7] h-screen pt-16">
+      <main class="bg-[#f7f7f7] min-h-screen max-h-max pt-16">
         <slot />
       </main>
     </section>

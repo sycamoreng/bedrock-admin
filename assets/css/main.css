@@ -5,21 +5,31 @@
 @source "../../node_modules/flowbite";
 
 @theme {
-  --color-primary: #448DF2;
-  --color-primary-25: #EDF8FD;
-  --color-primary-50: #E8F1FD;
-  --color-primary-500: #0A445C;
+  --color-primary: #C58A68;
+  --color-primary-25: #E2C5B4;
+  --color-primary-50: #DEBCA9;
+  --color-primary-500: #C58A68;
   --color-primary-600: #073042;
   --color-primary-700: #062937;
   --color-primary-800: #041B25;
+  --color-primary-light: #FFF4EE;
+  --color-primary-light2: #F8F1ED;
+  --color-primary-light3: #FEDBC6;
   --color-grayC6: #C6C5CA;
   --color-gray8D: #8D8A95;
   --color-gray67: #676472;
   --color-gray44: #444444;
   --color-gray75: #757575;
+  --color-gray71: #71717A;
+  --color-grayF8: #F8FAFC;
+  --color-grayE5: #E5E7EB;
+  --color-grayFA: #FAFAFA;
+  --color-grayF2: #F2F2F2;
   --color-custom-yellow: #FFFBEB;
   --color-custom-light-green: #CFF7D3;
   --color-custom-dark-green: #009951;
+  --text-xs: 12px;
+  --text-xxs: 10px;
 }
 
 * {
@@ -35,11 +45,12 @@ a {
   font-size: 14px;
 }
 
-input {
+input, textarea, select {
   outline: none;
   font-family: 'Satoshi';
   font-size: 12px;
   color: var(--color-gray44);
+  resize: none;
 }
 
 button {

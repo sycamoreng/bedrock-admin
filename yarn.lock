@@ -878,6 +878,64 @@
     "@floating-ui/utils" "^0.2.9"
     vue-demi ">=0.13.0"
 
+"@fullcalendar/core@^6.1.19":
+  version "6.1.19"
+  resolved "https://registry.yarnpkg.com/@fullcalendar/core/-/core-6.1.19.tgz#60379111ba0cfb9fd9bc6594fee47cf855fc77b2"
+  integrity sha512-z0aVlO5e4Wah6p6mouM0UEqtRf1MZZPt4mwzEyU6kusaNL+dlWQgAasF2cK23hwT4cmxkEmr4inULXgpyeExdQ==
+  dependencies:
+    preact "~10.12.1"
+
+"@fullcalendar/daygrid@^6.1.19":
+  version "6.1.19"
+  resolved "https://registry.yarnpkg.com/@fullcalendar/daygrid/-/daygrid-6.1.19.tgz#1d70a7f3f4cc13d3f27f55ed6880aae09a1a367b"
+  integrity sha512-IAAfnMICnVWPjpT4zi87i3FEw0xxSza0avqY/HedKEz+l5MTBYvCDPOWDATpzXoLut3aACsjktIyw9thvIcRYQ==
+
+"@fullcalendar/interaction@^6.1.19":
+  version "6.1.19"
+  resolved "https://registry.yarnpkg.com/@fullcalendar/interaction/-/interaction-6.1.19.tgz#48d85601a4203ede7cb400323fe5a9c163e28804"
+  integrity sha512-GOciy79xe8JMVp+1evAU3ytdwN/7tv35t5i1vFkifiuWcQMLC/JnLg/RA2s4sYmQwoYhTw/p4GLcP0gO5B3X5w==
+
+"@fullcalendar/premium-common@~6.1.19":
+  version "6.1.19"
+  resolved "https://registry.yarnpkg.com/@fullcalendar/premium-common/-/premium-common-6.1.19.tgz#367ab5f4bf2cdd4f64b553b1c954f5fa49ab0ee4"
+  integrity sha512-bOWHm1u1dUy6M4fQ0hNK7qEI7SrVWrN1ovv/z4/FE/ybfM19ukz7SFs907Ur7KUBWLNKTQYXBtdrY/ginwWraw==
+
+"@fullcalendar/resource-timeline@^6.1.19":
+  version "6.1.19"
+  resolved "https://registry.yarnpkg.com/@fullcalendar/resource-timeline/-/resource-timeline-6.1.19.tgz#95d1d822b942ca4d8d11008d8b4da0db663ae1c7"
+  integrity sha512-oC3aVR++dLqJNeBwmLHq9sDgRDFfIG0qSteV7bgBekvNlqEMqXx8wPjUxnELrq8rrhMmK4iV3wO7AB/48IVgyg==
+  dependencies:
+    "@fullcalendar/premium-common" "~6.1.19"
+    "@fullcalendar/scrollgrid" "~6.1.19"
+    "@fullcalendar/timeline" "~6.1.19"
+
+"@fullcalendar/resource@^6.1.19":
+  version "6.1.19"
+  resolved "https://registry.yarnpkg.com/@fullcalendar/resource/-/resource-6.1.19.tgz#fb3c3534d55648bce16916e58639271a517d39d8"
+  integrity sha512-br1ylX/aIOfd8m7Tzl2LpJBSI+N9Q6aS1qw7K9qnQjYXWQyHBlfLG6ZcPmmkjfaqTUJc8ARRbtNWj1ts5qOZgQ==
+  dependencies:
+    "@fullcalendar/premium-common" "~6.1.19"
+
+"@fullcalendar/scrollgrid@~6.1.19":
+  version "6.1.19"
+  resolved "https://registry.yarnpkg.com/@fullcalendar/scrollgrid/-/scrollgrid-6.1.19.tgz#34ed62ba5febd0bada817c90e73fad0fb36df110"
+  integrity sha512-S1pbiYHvmV0ep6z5sWXJQfgW4Y/jrS5iLIAqSagDFPK0jr327nBxl7Ryi3Zb5UdMIP0/O4GXs8jwZabQPd8SOg==
+  dependencies:
+    "@fullcalendar/premium-common" "~6.1.19"
+
+"@fullcalendar/timeline@~6.1.19":
+  version "6.1.19"
+  resolved "https://registry.yarnpkg.com/@fullcalendar/timeline/-/timeline-6.1.19.tgz#d08dfcd6bacc87507d59e8159f529ca83d93cd46"
+  integrity sha512-d2P961mnUTXtJeWNmIq1neoDmZcrPUaK7nGFoc+jQAlnmG3aNSVWQmD1ia694AMqLWtcWkwipW9MuaJgx2QvrA==
+  dependencies:
+    "@fullcalendar/premium-common" "~6.1.19"
+    "@fullcalendar/scrollgrid" "~6.1.19"
+
+"@fullcalendar/vue3@^6.1.19":
+  version "6.1.19"
+  resolved "https://registry.yarnpkg.com/@fullcalendar/vue3/-/vue3-6.1.19.tgz#43cecccfaca27679823b98c73ba2e042c60e98cb"
+  integrity sha512-j5eUSxx0xIy3ADljo0f5B9PhjqXnCQ+7nUMPfsslc2eGVjp4F74YvY3dyd6OBbg13IvpsjowkjncGipYMQWmTA==
+
 "@humanfs/core@^0.19.1":
   version "0.19.1"
   resolved "https://registry.npmjs.org/@humanfs/core/-/core-0.19.1.tgz"
@@ -7279,6 +7337,11 @@ postcss@^8.5.1:
     nanoid "^3.3.11"
     picocolors "^1.1.1"
     source-map-js "^1.2.1"
+
+preact@~10.12.1:
+  version "10.12.1"
+  resolved "https://registry.yarnpkg.com/preact/-/preact-10.12.1.tgz#8f9cb5442f560e532729b7d23d42fd1161354a21"
+  integrity sha512-l8386ixSsBdbreOAkqtrwqHwdvR35ID8c3rKPa8lCWuO86dBi32QWHV4vfsZK1utLLFMvw+Z5Ad4XLkZzchscg==
 
 prebuild-install@^7.1.1:
   version "7.1.3"

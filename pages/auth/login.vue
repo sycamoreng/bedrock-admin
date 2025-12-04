@@ -16,7 +16,7 @@
         <Input id="password" type="password" label="Password" placeholder="••••••••••" v-model="form.password">
           <PhosphorIconLockKey />
         </Input>
-        <Button text="Log in" @click="handleLogin" :loading="form.loading" :disabled="!formReady || form.loading"  />
+        <Button text="Log in" @click="handleLogin" :loading="form.loading" :disabled="!formReady || form.loading" />
       </div>
     </div>
     <div class="hidden md:block login-bg md:w-1/2 bg-cover bg-center bg-no-repeat bg-blend-multiply bg-black/40"></div>
