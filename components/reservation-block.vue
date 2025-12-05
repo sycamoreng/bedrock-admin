@@ -1,19 +1,22 @@
 <!-- reservation-block.vue -->
 <template>
   <div
-    class="absolute h-8 rounded-md flex items-center px-2 text-xs font-semibold text-white shadow-sm cursor-pointer"
+    class="absolute h-9 rounded-md flex items-center px-2 text-xs font-semibold text-white shadow-sm cursor-pointer"
     :class="bgColor"
     :style="{
       top: '10px',
       left: offsetPx + 'px',
       width: widthPx + 'px'
     }"
+    @click="Window.alert('hello')"
   >
-    {{ reservation.id }}
+    {{ reservation.guest }}
   </div>
 </template>
 
 <script setup>
+const dayjs = useDayjs();
+
 const props = defineProps({
   reservation: Object,
   timelineDays: Array,
@@ -25,8 +28,8 @@ const timelineStart = props.timelineDays[0]
 const timelineEnd = props.timelineDays[props.timelineDays.length - 1]
 
 /** RESERVATION RANGE */
-const resStart = props.reservation.start
-const resEnd = props.reservation.end
+const resStart = dayjs(props.reservation.start)
+const resEnd = dayjs(props.reservation.end)
 
 /** CLAMPED START */
 const visibleStart = resStart.isAfter(timelineStart)

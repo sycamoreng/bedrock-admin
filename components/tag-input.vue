@@ -14,8 +14,8 @@
         <CustomIcon :icon="tag.icon" />&nbsp;
         {{ tag.label }}
         <button
-          @click.stop="removeTag(index)"
           class="ml-1 text-xxs text-black bg-gray-300 rounded-full h-4 w-4 text-center"
+          @click.stop="removeTag(index)"
         >
           ✕
         </button>
@@ -25,6 +25,9 @@
       <input
         ref="inputRef"
         v-model="search"
+        type="text"
+        :placeholder="tags.length ? '' : placeholder"
+        class="flex-1 min-w-[100px] border-none focus:ring-0 outline-none"
         @focus="handleFocus"
         @blur="handleBlur"
         @input="showDropdown = true"
@@ -33,10 +36,7 @@
         @keydown.enter.prevent="selectActive"
         @keydown.esc="hideDropdown"
         @keydown.backspace="checkDelete"
-        type="text"
-        :placeholder="tags.length ? '' : placeholder"
-        class="flex-1 min-w-[100px] border-none focus:ring-0 outline-none"
-      />
+      >
     </div>
 
     <!-- Dropdown -->
@@ -49,11 +49,11 @@
           <li
             v-for="(option, index) in filteredOptions"
             :key="option.label"
-            @mousedown.prevent="addTag(option)"
             :class="[
               'flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-primary-50 text-xs',
               index === activeIndex ? 'bg-primary-50' : ''
             ]"
+            @mousedown.prevent="addTag(option)"
           >
             <CustomIcon :icon="option.icon" />
             {{ option.label }}

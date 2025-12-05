@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export const useBookingStore = defineStore("bookingStore", {
   state: () => ({
     bookings: [],
+    reservations: [],
   }),
   actions: {
     async getBookings(size = 100) {
@@ -8,7 +10,7 @@ export const useBookingStore = defineStore("bookingStore", {
         url: `/admin/booking?size=${size}`,
         method: "get",
       });
-      const { data } = response?.data;
+      const { data } = response.data;
       this.bookings = data;
     },
     async createBooking(body: any) {
@@ -17,8 +19,16 @@ export const useBookingStore = defineStore("bookingStore", {
         method: "post",
         data: body,
       });
-      const { data } = response?.data;
+      const { data } = response.data;
       // this.bookings = data.items;
+    },
+    async fetchReservations({start_date, end_date}: any) {
+      const response = await bedrockServiceClient({
+        url: `/admin/dashboard/reservations?start_date=${start_date}&end_date=${end_date}`,
+        method: "get",
+      });
+      const { data } = response.data;
+      this.reservations = data;
     },
   },
 });

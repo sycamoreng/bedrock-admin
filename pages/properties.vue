@@ -17,14 +17,16 @@
         <button
           data-modal-target="residence-modal" data-modal-show="residence-modal" data-modal-placement="right"
           aria-controls="residence-modal" data-modal-backdrop="true"
-          class="bg-primary text-xs text-white border border-primary px-3 py-2 rounded-sm cursor-pointer flex items-center gap-1"
+          class="bg-primary text-sm text-white border border-primary px-3 py-2 rounded-sm cursor-pointer items-center gap-1"
+          :class="currentTab === 0 ? 'flex' : 'hidden'"
           type="button">
           <PhosphorIconBuilding /> Add new Residence
         </button>
         <button
           data-modal-target="apartment-modal" data-modal-show="apartment-modal" data-modal-placement="right"
           aria-controls="apartment-modal"
-          class="bg-white text-xs text-primary border border-primary px-3 py-2 rounded-sm cursor-pointer flex items-center gap-1"
+          class="bg-primary text-sm text-white border border-primary px-3 py-2 rounded-sm cursor-pointer flex items-center gap-1"
+          :class="currentTab === 1 ? 'flex' : 'hidden'"
           type="button">
           <PhosphorIconHouse /> Add new Apartment
         </button>
@@ -128,6 +130,7 @@
             <th scope="col" class="px-6 py-3">Apartment</th>
             <th scope="col" class="px-6 py-3">Apartment Type</th>
             <th scope="col" class="px-6 py-3">No Of Occupants</th>
+            <th scope="col" class="px-6 py-3">Base Rate</th>
             <th scope="col" class="px-6 py-3">Action</th>
           </tr>
         </thead>
@@ -149,6 +152,7 @@
             </td>
             <td class="px-6 py-4">{{item?.type}}</td>
             <td class="px-6 py-4">{{item?.max_no_of_occupants}}</td>
+            <td class="px-6 py-4">N{{Number(item?.price).toLocaleString()}}</td>
             <td class="px-6 py-4 text-primary font-medium">Edit</td>
           </tr>
         </tbody>
@@ -173,7 +177,7 @@
         <div class="mb-4">
           <label class="block mb-1 text-sm font-medium text-gray-900 dark:text-white">Amenities</label>
           <TagInput
-            v-model="selectedTags"
+            v-model="residenceData.amenities"
             :options="miscStore.amenities?.map(item => ({label: item?.name, icon: item?.icon, value: item?.slug}))"
             placeholder="Select Amenities"
           />
@@ -212,19 +216,22 @@
       </div>
       <div v-if="currentApartmentTab === 0" class="my-6">
         <div class="mb-4">
-          <label for="ca-countries" class="block mb-1 text-sm font-medium text-gray-900 dark:text-white">Select a
+          <label for="ca-residence" class="block mb-1 text-sm font-medium text-gray-900 dark:text-white">Select a
             residence</label>
           <select
-            id="ca-countries"
+            id="ca-residence"
+            v-model="apartmentForm.residence_id"
             class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-2 focus:ring-primary-50 focus:border-primary block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-50 dark:focus:border-primary">
             <option
               v-for="(item, index) in residenceStore.residences"
-              :key="index">{{item.name}}</option>
+              :key="index"
+              :value="item.id">{{item.name}}</option>
           </select>
         </div>
         <div class="mb-4 grid grid-cols-2 gap-x-2">
           <CustomInput
-            id="ca-name" type="text" label="Name"
+            id="ca-name" v-model="apartmentForm.name" type="text"
+            label="Name"
             placeholder="e.g Executive 4-bedroom" required />
           <div>
             <label for="ca-apartmentType" class="block mb-1 text-sm font-medium text-gray-900 dark:text-white">Type</label>
@@ -239,34 +246,34 @@
           <label for="ca-description" class="block mb-1 text-sm font-medium text-gray-900 dark:text-white">About this
             apartment</label>
           <textarea
-            id="ca-description" rows="4"
+            id="ca-description" v-model="apartmentForm.description" rows="4"
             class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-50 focus:border-primary dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-50 dark:focus:border-primary"
             placeholder="Write a very good description of this apartment..." />
         </div>
         <div class="mb-4">
           <label class="block mb-1 text-sm font-medium text-gray-900 dark:text-white">Amenities</label>
           <TagInput
-            v-model="selectedTags"
+            v-model="apartmentForm.amenities"
             :options="miscStore.amenities?.map(item => ({label: item?.name, icon: item?.icon, value: item?.slug}))"
             placeholder="Select Amenities"
           />
         </div>
         <div class="mb-4">
           <CustomInput
-            id="ca-max_no_of_occupants" type="number" label="Max.
+            id="ca-max_no_of_occupants" v-model="apartmentForm.no_of_occupants" type="number" label="Max.
             Occupants"
             placeholder="8" required />
         </div>
         <div class="mb-4 grid grid-cols-2 gap-x-2">
           <div>
             <CustomInput
-              id="ca-no_of_bedrooms" type="number" label="No. of
+              id="ca-no_of_bedrooms" v-model="apartmentForm.no_of_bedrooms" type="number" label="No. of
               Bedrooms"
               placeholder="3" required />
           </div>
           <div>
             <CustomInput
-              id="no_of_bathrooms" type="number" label="No. of
+              id="no_of_bathrooms" v-model="apartmentForm.no_of_bathrooms" type="number" label="No. of
               Bathrooms"
               placeholder="4" required />
           </div>
@@ -275,41 +282,46 @@
       <div v-if="currentApartmentTab === 1" class="my-6">
         <div class="mb-4">
           <CustomInput
-            id="ca-price" type="text" label="Base Rate (NGN)"
+            id="ca-price" v-model="apartmentForm.base_rate" type="text" label="Base Rate (NGN)"
             placeholder="N100,000" required />
         </div>
         <div class="mb-4">
           <CustomInput
-            id="ca-weekend-rate" type="text" label="Weekend Rate (NGN)"
+            id="ca-weekend-rate" v-model="apartmentForm.weekend_rate" type="text" label="Weekend Rate (NGN)"
             placeholder="N100,000" required />
         </div>
         <div class="mb-4">
           <CustomInput
-            id="ca-party-rate" type="text" label="Party/Event Rate (NGN)"
+            id="ca-party-rate" v-model="apartmentForm.party_rate" type="text" label="Party/Event Rate (NGN)"
             placeholder="N100,000" required />
         </div>
         <div class="mb-4">
           <CustomInput
-            id="ca-caution-fee" type="text" label="Refundable Caution Fee (NGN)"
+            id="ca-caution-fee" v-model="apartmentForm.caution_fee" type="text" label="Refundable Caution Fee (NGN)"
             placeholder="N100,000" required />
         </div>
       </div>
       <div v-if="currentApartmentTab === 2" class="my-6">
-        <div v-for="(_, index) in [...Array(discountRuleCount)]" :key="index" class="mb-4 grid grid-cols-2 gap-x-2">
+        <div v-for="(_, index) in apartmentForm.los_discounts" :key="index" class="mb-4 grid grid-cols-2 gap-x-2">
           <CustomInput
-            id="ca-discount-min-nights" type="number" label="Minimum Nights"
+            :id="`ca-discount-min-nights-${index}`" v-model="apartmentForm.los_discounts[index].minimum_nights"
+            type="number" label="Minimum Nights"
             placeholder="3" required />
           <CustomInput
-            id="ca-discount-percent" type="number" label="Discount(%)"
+            :id="`ca-discount-percent-${index}`" v-model="apartmentForm.los_discounts[index].discount"
+            type="number" label="Discount(%)"
             placeholder="4" required />
         </div>
-        <Button text="Add Discount Rule" class="bg-white" text-color="text-primary" @click="discountRuleCount++" />
+        <Button text="Add Discount Rule" class="bg-white" text-color="text-primary" @click="addLosDiscount" />
         <div class="bg-primary-light2 text-sm py-4 px-3 rounded-lg mt-3">
           Preview: Active Discounts
-          <!-- <p>Stay </p> -->
+          <p v-for="(item, index) in previewDiscounts" :key="index" class="text-gray71 text-xs">Stay {{item.minimum_nights}}+ nights>>>{{item.discount}}% off</p>
         </div>
       </div>
-      <Button text="Add Apartment" />
+      <div class="flex gap-x-3">
+        <Button :text="currentApartmentTab > 0 ? 'Go back' : 'Cancel'" class="bg-white" text-color="text-primary" @click="currentApartmentTab--" />
+        <Button :text="currentApartmentTab < 2 ? 'Continue' : 'Add Apartment'" @click="handleCreateApartment" />
+      </div>
     </FormModal>
     <FormModal uid="view-apartment-modal" :title="selectedApartment?.name">
       <template #icon>
@@ -321,7 +333,7 @@
           <ul class="flex -mb-px">
             <li v-for="(item, index) in selectedApartmentTabs" :key="index" class="me-2 w-full">
               <p
-class="inline-block p-4 pb-2 border-b-2 rounded-t-lg cursor-pointer"
+                class="inline-block p-4 pb-2 border-b-2 rounded-t-lg cursor-pointer"
                 :class="selectedApartmentTab === index ? 'text-blue-600 border-blue-600 active dark:text-prring-primary dark:border-prring-primary' : 'border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300'"
                 @click="selectedApartmentTab = index">
                 {{item}}</p>
@@ -332,7 +344,7 @@ class="inline-block p-4 pb-2 border-b-2 rounded-t-lg cursor-pointer"
           <div class="mb-4">
             <label for="title" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
             <input
-id="title" type="text" :value="selectedApartment?.name"
+              id="title" type="text" :value="selectedApartment?.name"
               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-prring-primary block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary dark:focus:border-prring-primary"
               placeholder="e.g Executive 4-bedroom" required >
           </div>
@@ -340,7 +352,7 @@ id="title" type="text" :value="selectedApartment?.name"
             <label for="description" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">About this
               apartment</label>
             <textarea
-id="description" rows="4" :value="selectedApartment?.about"
+              id="description" rows="4" :value="selectedApartment?.about"
               class="block p-2.5 w-full text-xs text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary focus:border-prring-primary dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary dark:focus:border-prring-primary"
               placeholder="Write a very good description of this apartment..."/>
           </div>
@@ -348,7 +360,7 @@ id="description" rows="4" :value="selectedApartment?.about"
             <div>
               <label for="price" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Price</label>
               <input
-id="price" type="text"
+                id="price" type="text"
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-prring-primary block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary dark:focus:border-prring-primary"
                 placeholder="N100,000" required >
             </div>
@@ -356,7 +368,7 @@ id="price" type="text"
               <label for="caution_fee" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Caution
                 fee</label>
               <input
-id="caution_fee" type="text" :value="selectedApartment?.caution_fee"
+                id="caution_fee" type="text" :value="selectedApartment?.caution_fee"
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-prring-primary block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary dark:focus:border-prring-primary"
                 placeholder="N50,000" required >
             </div>
@@ -365,7 +377,7 @@ id="caution_fee" type="text" :value="selectedApartment?.caution_fee"
             <label for="max_no_of_occupants" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Max.
               Occupants</label>
             <input
-id="max_no_of_occupants" type="number" :value="selectedApartment?.max_no_of_occupants"
+                id="max_no_of_occupants" type="number" :value="selectedApartment?.max_no_of_occupants"
               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-prring-primary block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary dark:focus:border-prring-primary"
               placeholder="8" required >
           </div>
@@ -374,7 +386,7 @@ id="max_no_of_occupants" type="number" :value="selectedApartment?.max_no_of_occu
               <label for="no_of_bedrooms" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">No. of
                 Bedrooms</label>
               <input
-id="no_of_bedrooms" type="number" :value="selectedApartment?.no_of_bedrooms"
+                id="no_of_bedrooms" type="number" :value="selectedApartment?.no_of_bedrooms"
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-prring-primary block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary dark:focus:border-prring-primary"
                 placeholder="3" required >
             </div>
@@ -382,13 +394,13 @@ id="no_of_bedrooms" type="number" :value="selectedApartment?.no_of_bedrooms"
               <label for="no_of_bathrooms" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">No. of
                 Bathrooms</label>
               <input
-id="no_of_bathrooms" type="number" :value="selectedApartment?.no_of_bathrooms"
+                id="no_of_bathrooms" type="number" :value="selectedApartment?.no_of_bathrooms"
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-prring-primary block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary dark:focus:border-prring-primary"
                 placeholder="4" required >
             </div>
           </div>
           <button
-type="submit"
+            type="submit"
             class="text-white justify-center flex items-center bg-primary hover:bg-blue-800 w-full focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Update
             Apartment</button>
         </div>
@@ -404,14 +416,14 @@ type="submit"
             </div>
             <div v-if="selectedApartmentShowPhotoUpload" class="flex items-center justify-center w-full">
               <label
-for="dropzone-file"
+                for="dropzone-file"
                 class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
                 <div class="flex flex-col items-center justify-center pt-5 pb-6">
                   <svg
-class="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true"
+                class="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true"
                     xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
                     <path
-stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2" />
                   </svg>
                   <p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">Click to
@@ -439,7 +451,6 @@ stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-widt
   const apartmentStore = useApartmentStore();
   const residenceStore = useResidenceStore();
   const miscStore = useMiscStore();
-  console.log(miscStore?.amenities)
 
   useHead({
     title: "Bedrock Admin | Residences & Apartments | Properties",
@@ -466,6 +477,27 @@ stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-widt
     about: "",
     address: "",
     location: "",
+    amenities: [],
+  });
+  const apartmentForm = reactive({
+    residence_id: null,
+    amenities: [],
+    name: "",
+    type: null,
+    description: "",
+    no_of_occupants: null,
+    no_of_bedrooms: null,
+    no_of_bathrooms: null,
+    base_rate: null,
+    weekend_rate: null,
+    party_rate: null,
+    caution_fee: null,
+    los_discounts: [
+      {
+        minimum_nights: 3,
+        discount: 10,
+      }
+    ],
   });
 
   const selectedApartment = ref(null);
@@ -474,9 +506,8 @@ stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-widt
   const residenceFormLoading =  ref(false);
   const tabs = ["Residencies", "Apartments"];
   const currentTab = ref(1);
-  const apartmentTab = ["Basic Details", "Pricing", "Discount"];
+  const apartmentTab = ["Basic Details", "Pricing", "LOS Discount"];
   const currentApartmentTab = ref(0);
-  const discountRuleCount = ref(1);
 
   const selectedApartmentTabs = computed(() => {
     return ["Manage", "Amenities", "Photos"];
@@ -506,6 +537,9 @@ stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-widt
       return false;
     }
   });
+  const previewDiscounts = computed(() => {
+    return apartmentForm.los_discounts.filter(item => item.minimum_nights > 0 && item.discount > 0);
+  });
 
   const selectApartment = (item) => {
     selectedApartment.value = item;
@@ -514,6 +548,16 @@ stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-widt
     selectedResidenceTab.title = item.title;
     selectedResidenceTab.count = item.count;
   };
+  const addLosDiscount = () => {
+    apartmentForm.los_discounts.push({
+      minimum_nights: null,
+      discount: null,
+    });
+  }
+  const removeLosDiscount = (pos) => {
+    // apartmentForm.los_discounts.()
+  }
+
   const createResidence = async () => {
     try {
       residenceFormLoading.value = true;
@@ -523,4 +567,13 @@ stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-widt
       residenceFormLoading.value = false;
     }
   }
+  const handleCreateApartment = () => {
+    if (currentApartmentTab.value === 0) {
+      currentApartmentTab.value = 1;
+    } else if (currentApartmentTab.value === 1) {
+      currentApartmentTab.value = 2;
+    } else if (currentApartmentTab.value === 2) {
+      apartmentStore.createApartment(apartmentForm);
+    }
+  };
 </script>

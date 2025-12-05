@@ -20,15 +20,20 @@
 
     <!-- Residences -->
     <div v-for="residence in residences" :key="residence.id">
-      <div class="font-medium bg-gray-100 p-2 border-y-[0.5px] border-gray-200 text-sm">
+      <div
+        class="font-medium bg-gray-100 p-2 border-y-[0.5px] border-gray-200 text-sm flex items-center gap-x-3 cursor-pointer"
+        @click="residenceVisibility[`r${residence.id}`] = !residenceVisibility[`r${residence.id}`]">
         {{ residence.name }}
+        <PhosphorIconCaretUp v-if="residenceVisibility[`r${residence.id}`]" />
+        <PhosphorIconCaretDown v-else />
       </div>
 
       <!-- Apartment Row -->
       <div
         v-for="apt in residence.apartments"
         :key="apt.id"
-        class="relative grid border-b border-gray-200"
+        class="relative border-b border-gray-200"
+        :class="residenceVisibility[`r${residence.id}`] ? 'grid' : 'hidden'"
         :style="{ gridTemplateColumns: '200px ' + repeatCol }"
       >
         <!-- Apartment Label -->
@@ -63,10 +68,25 @@
 </template>
 
 <script setup>
+const dayjs = useDayjs();
+
 const props = defineProps({
   residences: Array,
   timelineDays: Array
 })
+const residenceVisibility = ref({});
+const handleVisibilityInit = () => {
+  const data = {};
+  props.residences.map(item => {
+    data[`r${item.id}`] = true;
+  });
+  residenceVisibility.value = data;
+  console.log(residenceVisibility.value, "sjdjd")
+}
+
+watchEffect(() => {
+  handleVisibilityInit();
+});
 
 const filterReservationsByOverlap = (reservations, days) => {
   if (!reservations || !days || days.length === 0) return []
@@ -75,10 +95,17 @@ const filterReservationsByOverlap = (reservations, days) => {
   const viewEnd = days[days.length - 1].endOf('day')
 
   return reservations.filter(res => {
-    return res.start.isBefore(viewEnd) && res.end.isAfter(viewStart)
+    return dayjs(res.start).isBefore(viewEnd) && dayjs(res.end).isAfter(viewStart)
   })
 }
 
+// const residenceVisibility = computed(() => {
+//   const data = {};
+//   props.residences.map(item => {
+//     data[`r${item.id}`] = true;
+//   });
+//   return data;
+// });
+
 const repeatCol = computed(() => `repeat(${props.timelineDays.length}, 120px)`)
 </script>
-
