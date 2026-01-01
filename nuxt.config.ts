@@ -51,6 +51,5 @@ export default defineNuxtConfig({
       enableOnWindowFocus: false,
     },
     globalAppMiddleware: true,
-  }
-
+  },
 })

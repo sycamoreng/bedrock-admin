@@ -222,6 +222,7 @@
             id="ca-residence"
             v-model="apartmentForm.residence_id"
             class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-2 focus:ring-primary-50 focus:border-primary block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-50 dark:focus:border-primary">
+            <option value="-">Select Residence</option>
             <option
               v-for="(item, index) in residenceStore.residences"
               :key="index"
@@ -232,13 +233,18 @@
           <CustomInput
             id="ca-name" v-model="apartmentForm.name" type="text"
             label="Name"
-            placeholder="e.g Executive 4-bedroom" required />
+            placeholder="e.g Sandstone" required />
           <div>
             <label for="ca-apartmentType" class="block mb-1 text-sm font-medium text-gray-900 dark:text-white">Type</label>
             <select
               id="ca-apartmentType"
-              class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-2 focus:ring-primary-50 focus:border-primary block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-50 dark:focus:border-primary">
-              <option value="">2 bedroom</option>
+              v-model="apartmentForm.type_id"
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-2 focus:ring-primary-50 focus:border-primary block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-50 dark:focus:border-primary capitalize">
+              <option value="-">Select Apartment Type</option>
+              <option
+                v-for="(item, index) in apartmentStore.apartmentTypes"
+                :key="index"
+                :value="item.id">{{item.name}}</option>
             </select>
           </div>
         </div>
@@ -246,21 +252,21 @@
           <label for="ca-description" class="block mb-1 text-sm font-medium text-gray-900 dark:text-white">About this
             apartment</label>
           <textarea
-            id="ca-description" v-model="apartmentForm.description" rows="4"
+            id="ca-description" v-model="apartmentForm.about" rows="4"
             class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-50 focus:border-primary dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-50 dark:focus:border-primary"
             placeholder="Write a very good description of this apartment..." />
         </div>
         <div class="mb-4">
           <label class="block mb-1 text-sm font-medium text-gray-900 dark:text-white">Amenities</label>
           <TagInput
-            v-model="apartmentForm.amenities"
-            :options="miscStore.amenities?.map(item => ({label: item?.name, icon: item?.icon, value: item?.slug}))"
+            :options="miscStore.amenities?.map(item => ({id: item?.id, label: item?.name, icon: item?.icon, value: item?.slug}))"
             placeholder="Select Amenities"
+            @update:value="updateAmenities"
           />
         </div>
         <div class="mb-4">
           <CustomInput
-            id="ca-max_no_of_occupants" v-model="apartmentForm.no_of_occupants" type="number" label="Max.
+            id="ca-max_no_of_occupants" v-model="apartmentForm.max_no_of_occupants" type="number" label="Max.
             Occupants"
             placeholder="8" required />
         </div>
@@ -282,17 +288,22 @@
       <div v-if="currentApartmentTab === 1" class="my-6">
         <div class="mb-4">
           <CustomInput
-            id="ca-price" v-model="apartmentForm.base_rate" type="text" label="Base Rate (NGN)"
+            id="ca-price" v-model="apartmentForm.price" type="text" label="Base Rate (NGN)"
             placeholder="N100,000" required />
         </div>
         <div class="mb-4">
           <CustomInput
-            id="ca-weekend-rate" v-model="apartmentForm.weekend_rate" type="text" label="Weekend Rate (NGN)"
+            id="ca-weekend-rate" v-model="apartmentForm.weekend_price" type="text" label="Weekend Rate (NGN)"
             placeholder="N100,000" required />
         </div>
         <div class="mb-4">
+          <div class="flex items-center mb-4">
+            <input id="ca-party" v-model="apartmentForm.party" :checked="apartmentForm.party" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" >
+            <label for="ca-party" class="ms-2 text-xs font-medium text-gray-900 dark:text-gray-300">Allow Party/Event</label>
+          </div>
           <CustomInput
-            id="ca-party-rate" v-model="apartmentForm.party_rate" type="text" label="Party/Event Rate (NGN)"
+            v-if="apartmentForm.party"
+            id="ca-party-rate" v-model="apartmentForm.party_price" type="text" label="Party/Event Rate (NGN)"
             placeholder="N100,000" required />
         </div>
         <div class="mb-4">
@@ -302,25 +313,32 @@
         </div>
       </div>
       <div v-if="currentApartmentTab === 2" class="my-6">
-        <div v-for="(_, index) in apartmentForm.los_discounts" :key="index" class="mb-4 grid grid-cols-2 gap-x-2">
-          <CustomInput
-            :id="`ca-discount-min-nights-${index}`" v-model="apartmentForm.los_discounts[index].minimum_nights"
-            type="number" label="Minimum Nights"
-            placeholder="3" required />
-          <CustomInput
-            :id="`ca-discount-percent-${index}`" v-model="apartmentForm.los_discounts[index].discount"
-            type="number" label="Discount(%)"
-            placeholder="4" required />
+        <div v-for="(_, index) in apartmentForm.los_discounts" :key="index" class="flex items-center justify-between">
+          <div class="w-[92%] mb-4 grid grid-cols-2 gap-x-2">
+            <CustomInput
+              :id="`ca-discount-min-nights-${index}`" v-model="apartmentForm.los_discounts[index].min_nights"
+              type="number" label="Minimum Nights"
+              placeholder="3" required />
+            <CustomInput
+              :id="`ca-discount-percent-${index}`" v-model="apartmentForm.los_discounts[index].discount_percentage"
+              type="number" label="Discount(%)"
+              placeholder="4" required />
+          </div>
+          <div
+            class="-mb-[10px] p-1 rounded-full bg-gray-200 cursor-pointer"
+            @click="removeLosDiscount(index)">
+            <PhosphorIconTrash :size="20" />
+          </div>
         </div>
         <Button text="Add Discount Rule" class="bg-white" text-color="text-primary" @click="addLosDiscount" />
         <div class="bg-primary-light2 text-sm py-4 px-3 rounded-lg mt-3">
           Preview: Active Discounts
-          <p v-for="(item, index) in previewDiscounts" :key="index" class="text-gray71 text-xs">Stay {{item.minimum_nights}}+ nights>>>{{item.discount}}% off</p>
+          <p v-for="(item, index) in previewDiscounts" :key="index" class="text-gray71 text-xs">Stay {{item.min_nights}}+ nights>>>{{item.discount_percentage}}% off</p>
         </div>
       </div>
       <div class="flex gap-x-3">
         <Button :text="currentApartmentTab > 0 ? 'Go back' : 'Cancel'" class="bg-white" text-color="text-primary" @click="currentApartmentTab--" />
-        <Button :text="currentApartmentTab < 2 ? 'Continue' : 'Add Apartment'" @click="handleCreateApartment" />
+        <Button :text="currentApartmentTab < 2 ? 'Continue' : 'Add Apartment'" :loading="formLoading" :disabled="!apartmentFormReady || formLoading" @click="handleCreateApartment" />
       </div>
     </FormModal>
     <FormModal uid="view-apartment-modal" :title="selectedApartment?.name">
@@ -448,6 +466,7 @@
 <script setup lang="ts">
   import { useFlowbite } from '~/composables/useFlowbite';
 
+  const toast = useToast();
   const apartmentStore = useApartmentStore();
   const residenceStore = useResidenceStore();
   const miscStore = useMiscStore();
@@ -463,7 +482,8 @@
   });
   onMounted(() => {
     apartmentStore.getApartments();
-    residenceStore.getResidences();
+    apartmentStore.getApartmentTypes();
+    residenceStore.getResidences({});
     miscStore.getAmenities();
   });
 
@@ -480,22 +500,24 @@
     amenities: [],
   });
   const apartmentForm = reactive({
-    residence_id: null,
+    residence_id: "-",
     amenities: [],
     name: "",
-    type: null,
-    description: "",
-    no_of_occupants: null,
+    type: "Selfie",
+    type_id: "-",
+    about: "",
+    max_no_of_occupants: null,
     no_of_bedrooms: null,
     no_of_bathrooms: null,
-    base_rate: null,
-    weekend_rate: null,
-    party_rate: null,
+    price: null,
+    weekend_price: null,
+    party: false,
+    party_price: null,
     caution_fee: null,
     los_discounts: [
       {
-        minimum_nights: 3,
-        discount: 10,
+        min_nights: 3,
+        discount_percentage: 10,
       }
     ],
   });
@@ -508,6 +530,7 @@
   const currentTab = ref(1);
   const apartmentTab = ["Basic Details", "Pricing", "LOS Discount"];
   const currentApartmentTab = ref(0);
+  const formLoading = ref(false);
 
   const selectedApartmentTabs = computed(() => {
     return ["Manage", "Amenities", "Photos"];
@@ -538,8 +561,42 @@
     }
   });
   const previewDiscounts = computed(() => {
-    return apartmentForm.los_discounts.filter(item => item.minimum_nights > 0 && item.discount > 0);
+    return apartmentForm.los_discounts.filter(item => item.min_nights > 0 && item.discount_percentage > 0);
   });
+  const apartmentFormReady = computed(() => {
+    const tab1 = apartmentForm.residence_id && apartmentForm.name && apartmentForm.type_id && apartmentForm.about && apartmentForm.amenities.length >= 2 && apartmentForm.max_no_of_occupants > 0 && apartmentForm.no_of_bedrooms && apartmentForm.no_of_bathrooms;
+    const tab2 = apartmentForm.price && apartmentForm.weekend_price && apartmentForm.caution_fee;
+    if (currentApartmentTab.value === 0) {
+      if (tab1) {
+        return true;
+      } else {
+        return false;
+      }
+    } else if (currentApartmentTab.value === 1) {
+      if (tab2) {
+        return true;
+      } else if (apartmentForm.party) {
+        if (apartmentForm.party_price) {
+          return true;
+        } else {
+          return false;
+        }
+      } else {
+        return false;
+      }
+    } else if (currentApartmentTab.value === 2) {
+      if (tab1 && tab2) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    return false;
+  });
+
+  const updateAmenities = value => {
+    apartmentForm.amenities = value.map(item => item.id);
+  }
 
   const selectApartment = (item) => {
     selectedApartment.value = item;
@@ -550,12 +607,12 @@
   };
   const addLosDiscount = () => {
     apartmentForm.los_discounts.push({
-      minimum_nights: null,
-      discount: null,
+      min_nights: null,
+      discount_percentage: null,
     });
   }
   const removeLosDiscount = (pos) => {
-    // apartmentForm.los_discounts.()
+    apartmentForm.los_discounts.splice(pos, 1);
   }
 
   const createResidence = async () => {
@@ -567,13 +624,19 @@
       residenceFormLoading.value = false;
     }
   }
-  const handleCreateApartment = () => {
+  const handleCreateApartment = async () => {
     if (currentApartmentTab.value === 0) {
       currentApartmentTab.value = 1;
     } else if (currentApartmentTab.value === 1) {
       currentApartmentTab.value = 2;
     } else if (currentApartmentTab.value === 2) {
-      apartmentStore.createApartment(apartmentForm);
+      formLoading.value = true;
+      await apartmentStore.createApartment(apartmentForm);
+      toast.add({
+        title: 'Apartment created',
+        description: 'This apartment was created successfully',
+      })
+      formLoading.value = false;
     }
   };
 </script>

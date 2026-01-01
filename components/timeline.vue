@@ -19,7 +19,7 @@
     </div>
 
     <!-- Residences -->
-    <div v-for="residence in residences" :key="residence.id">
+    <div v-for="residence in residences" :key="residence.id" class="w-fit">
       <div
         class="font-medium bg-gray-100 p-2 border-y-[0.5px] border-gray-200 text-sm flex items-center gap-x-3 cursor-pointer"
         @click="residenceVisibility[`r${residence.id}`] = !residenceVisibility[`r${residence.id}`]">
@@ -37,7 +37,7 @@
         :style="{ gridTemplateColumns: '200px ' + repeatCol }"
       >
         <!-- Apartment Label -->
-        <div class="border-r-[0.5px] pl-2 pt-2 text-sm text-gray71 h-12">
+        <div class="border-r-[0.5px] border-gray-200 pl-2 pt-4 text-sm text-gray71 h-12">
           {{ apt.name }}
         </div>
 
@@ -46,6 +46,8 @@
           v-for="day in timelineDays"
           :key="day.valueOf()"
           class="border-r-[0.5px] h-12 border-gray-200"
+          :class="filterReservationsByOverlap(apt.reservations, timelineDays)?.length < 1 && 'cursor-pointer z-10 hover:bg-gray-200'"
+          @click="bookingAction(day, {residence_id: residence.id, apartment_id: apt.id})"
         ></div>
 
         <!-- OVERLAY (aligned exactly with the day columns) -->
@@ -59,6 +61,7 @@
             :reservation="res"
             :timeline-days="timelineDays"
             :day-width="120"
+            :view-booking="(res) => handleViewBooking(res, apt, residence)"
           />
         </div>
       </div>
@@ -72,7 +75,9 @@ const dayjs = useDayjs();
 
 const props = defineProps({
   residences: Array,
-  timelineDays: Array
+  timelineDays: Array,
+  bookingAction: Function,
+  viewBooking: Function,
 })
 const residenceVisibility = ref({});
 const handleVisibilityInit = () => {
@@ -81,7 +86,6 @@ const handleVisibilityInit = () => {
     data[`r${item.id}`] = true;
   });
   residenceVisibility.value = data;
-  console.log(residenceVisibility.value, "sjdjd")
 }
 
 watchEffect(() => {
@@ -98,14 +102,15 @@ const filterReservationsByOverlap = (reservations, days) => {
     return dayjs(res.start).isBefore(viewEnd) && dayjs(res.end).isAfter(viewStart)
   })
 }
-
-// const residenceVisibility = computed(() => {
-//   const data = {};
-//   props.residences.map(item => {
-//     data[`r${item.id}`] = true;
-//   });
-//   return data;
-// });
+const handleViewBooking = (res, apt, residence) => {
+  props.viewBooking({
+    ...res,
+    apartment_id: apt.id,
+    apartment_name: apt.name,
+    residence_id: residence.id,
+    residence_name: residence.name,
+  });
+};
 
 const repeatCol = computed(() => `repeat(${props.timelineDays.length}, 120px)`)
 </script>

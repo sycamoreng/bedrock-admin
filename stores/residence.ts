@@ -3,9 +3,9 @@ export const useResidenceStore = defineStore("residenceStore", {
     residences: [],
   }),
   actions: {
-    async getResidences(size = 100) {
+    async getResidences({size = 100, type = 'cascade'}) {
       const response = await bedrockServiceClient({
-        url: `/admin/residence?size=${size}`,
+        url: `/admin/residence?size=${size}&type=${type}`,
         method: "get",
       });
       const { data } = response?.data;

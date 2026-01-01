@@ -81,6 +81,7 @@
         default: "Select options...",
       },
     },
+    emits: ['update:value'],
     data() {
       return {
         tags: [...this.value],
@@ -107,8 +108,11 @@
       },
     },
     watch: {
-      tags(newVal) {
-        this.$emit("update:value", newVal);
+      tags: {
+        handler: function(newVal) {
+          this.$emit("update:value", newVal);
+        },
+        deep: true,
       },
     },
     methods: {

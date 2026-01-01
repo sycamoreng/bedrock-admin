@@ -1,5 +1,6 @@
 @import "./fonts.css";
 @import "tailwindcss";
+@import "@nuxt/ui";
 
 @import "flowbite/src/themes/default";
 @source "../../node_modules/flowbite";
@@ -55,4 +56,8 @@ input, textarea, select {
 
 button {
   cursor: pointer;
+}
+
+.datepicker-dropdown {
+  z-index: 999999 !important;
 }

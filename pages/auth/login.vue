@@ -10,20 +10,19 @@
         <p>Sign in to access your dashboard.</p>
       </div>
       <div class="mt-10">
-        <Input id="email" type="email" label="Email" placeholder="Your Email" v-model="form.email">
+        <Input id="email" v-model="form.email" type="email" label="Email" placeholder="Your Email">
           <PhosphorIconEnvelopeSimple />
         </Input>
-        <Input id="password" type="password" label="Password" placeholder="••••••••••" v-model="form.password">
+        <Input id="password" v-model="form.password" type="password" label="Password" placeholder="••••••••••">
           <PhosphorIconLockKey />
         </Input>
-        <Button text="Log in" @click="handleLogin" :loading="form.loading" :disabled="!formReady || form.loading" />
+        <Button text="Log in" :loading="form.loading" :disabled="!formReady || form.loading" @click="handleLogin" />
       </div>
     </div>
-    <div class="hidden md:block login-bg md:w-1/2 bg-cover bg-center bg-no-repeat bg-blend-multiply bg-black/40"></div>
+    <div class="hidden md:block login-bg md:w-1/2 bg-cover bg-center bg-no-repeat bg-blend-multiply bg-black/40"/>
   </div>
 </template>
 <script setup>
-import { reactive, ref } from "vue";
 const { signIn } = useAuth();
 
 useHead({

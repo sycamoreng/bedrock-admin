@@ -1,6 +1,9 @@
 <!-- reservation-block.vue -->
 <template>
   <div
+    id="reservation-block"
+    data-modal-target="booking-info" data-modal-show="booking-info" data-modal-placement="right"
+    aria-controls="booking-info"
     class="absolute h-9 rounded-md flex items-center px-2 text-xs font-semibold text-white shadow-sm cursor-pointer"
     :class="bgColor"
     :style="{
@@ -8,7 +11,7 @@
       left: offsetPx + 'px',
       width: widthPx + 'px'
     }"
-    @click="Window.alert('hello')"
+    @click="viewBooking(reservation)"
   >
     {{ reservation.guest }}
   </div>
@@ -20,7 +23,8 @@ const dayjs = useDayjs();
 const props = defineProps({
   reservation: Object,
   timelineDays: Array,
-  dayWidth: Number
+  dayWidth: Number,
+  viewBooking: Function,
 })
 
 /** TIMELINE RANGE */

@@ -21,7 +21,6 @@
           <option :value="30">30 days</option>
         </select> -->
       </div>
-      <p @click="modal.show()">ddshdh</p>
 
       <div class="flex items-center">
         <div class="flex items-center justify-between flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 p-4">
@@ -37,9 +36,9 @@
             class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-48 dark:bg-gray-700">
             <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownDefaultButton">
               <li
-                v-for="(item, index) in residencesData" :key="index"
+                v-for="(item, index) in residenceStore.residences" :key="index"
                 class="flex justify-between items-center px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">
-                <p class="text-xs">{{item.title}}</p>
+                <p class="text-xs">{{item.name}}</p>
               </li>
             </ul>
           </div>
@@ -67,35 +66,72 @@
       </div>
     </div>
 
-    <Timeline :residences="bookingStore.reservations" :timeline-days="timelineDays" />
+    <Timeline
+      :residences="bookingStore.reservations"
+      :timeline-days="timelineDays"
+      :booking-action="handleOpenBookingModal"
+      :view-booking="handleViewBookingModal" />
 
-    <FormModal uid="booking-info" title="Booking Information">
-      <BookingInfo />
-    </FormModal>
+    <UModal v-model:open="openViewModal" title="View Booking" description="">
+      <template #body>
+        <BookingInfo
+          :booking-info="newBookingData" />
+      </template>
+    </UModal>
+
+    <UModal v-model:open="openModal" title="Create Booking" description="">
+      <template #body>
+        <BookingCreate
+          :booking-data="newBookingData"
+          :residences-data="residenceStore.residences"
+          :apartments-data="apartmentStore.apartments" />
+      </template>
+    </UModal>
   </div>
 </template>
 
 <script setup>
-import { Modal } from 'flowbite'
-import { useFlowbite } from '~/composables/useFlowbite';
-
 const dayjs = useDayjs()
+// const toast = useToast();
 
 const bookingStore = useBookingStore();
+const residenceStore = useResidenceStore();
+const apartmentStore = useApartmentStore();
+
+const newBookingData = reactive({
+  check_in: null,
+  check_out: null,
+  apartment_id: null,
+  residence_id: null,
+});
 
 onMounted(() => {
-  useFlowbite(() => {
-    initFlowbite();
-  })
-  const $modalElement = document.querySelector('#booking-info');
-  const modal = new Modal($modalElement);
-});
-onMounted(() => {
   bookingStore.fetchReservations({
-    start_date: dayjs().subtract(12, "months"),
-    end_date: dayjs().format("YYYY-MM-DD"),
+    start_date: dayjs().subtract(6, "months").format("YYYY-MM-DD"),
+    end_date: dayjs().add(6, "months").format("YYYY-MM-DD"),
   });
+  residenceStore.getResidences({type: 'no-cascade'});
+  apartmentStore.getApartments();
 });
+
+const openModal = ref(false);
+const openViewModal = ref(false);
+const handleOpenBookingModal = (day, residence) => {
+  openModal.value = !openModal.value;
+  newBookingData.check_in = day.format("YYYY-MM-DD");
+  newBookingData.check_out = day.add(1, "days").format("YYYY-MM-DD");
+  newBookingData.apartment_id = residence.apartment_id;
+  newBookingData.residence_id = residence.residence_id;
+  // toast.add({
+  //   title: 'Event added to calendar',
+  //   description: 'This event is scheduled for ${formattedDate}.',
+  //   icon: 'i-lucide-calendar-days'
+  // })
+}
+const handleViewBookingModal = (reservation) => {
+  console.log(reservation)
+  openViewModal.value = !openViewModal.value;
+}
 
 const { timelineDays, currentDate, daysToShow } = useReservations()
 
@@ -108,11 +144,9 @@ const residencesData = [
 const goPrev = () => {
   currentDate.value = currentDate.value.subtract(daysToShow.value, 'day')
 }
-
 const goNext = () => {
   currentDate.value = currentDate.value.add(daysToShow.value, 'day')
 }
-
 const goToday = () => {
   currentDate.value = dayjs()
 }
