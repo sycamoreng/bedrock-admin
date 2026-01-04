@@ -13,7 +13,7 @@
     }"
     @click="viewBooking(reservation)"
   >
-    {{ reservation.guest }}
+    {{ reservation.guest?.name }}
   </div>
 </template>
 

@@ -104,11 +104,26 @@ const filterReservationsByOverlap = (reservations, days) => {
 }
 const handleViewBooking = (res, apt, residence) => {
   props.viewBooking({
-    ...res,
     apartment_id: apt.id,
     apartment_name: apt.name,
     residence_id: residence.id,
     residence_name: residence.name,
+    residence_address: residence.address,
+    check_in: res.start,
+    check_out: res.end,
+    guest_name: res.guest?.name,
+    guest_email: res.guest?.email,
+    guest_phone: res.guest?.phone,
+    guest_address: res.guest?.address,
+    base_price: res.base_price,
+    caution_fee: res.caution_fee,
+    tax: res.tax,
+    total_price: res.total_price,
+    discount: res.discount_amount,
+    nights: res.nights,
+    no_of_adults: res.no_of_adults,
+    no_of_children: res.no_of_children,
+    status: res.status,
   });
 };
 

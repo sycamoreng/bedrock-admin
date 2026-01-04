@@ -23,11 +23,10 @@
           <PhosphorIconBuilding /> Add new Residence
         </button>
         <button
-          data-modal-target="apartment-modal" data-modal-show="apartment-modal" data-modal-placement="right"
-          aria-controls="apartment-modal"
           class="bg-primary text-sm text-white border border-primary px-3 py-2 rounded-sm cursor-pointer flex items-center gap-1"
           :class="currentTab === 1 ? 'flex' : 'hidden'"
-          type="button">
+          type="button"
+          @click="openCreateModal = true">
           <PhosphorIconHouse /> Add new Apartment
         </button>
       </div>
@@ -201,146 +200,145 @@
         <Button text="Create Residence" :loading="residenceFormLoading" :disabled="!residenceFormReady || residenceFormLoading" @click="createResidence" />
       </div>
     </FormModal>
-    <FormModal uid="apartment-modal" title="Create Apartment">
-      <template #icon>
-        <PhosphorIconHouse />
-      </template>
-      <div class="bg-gray-100/60 border border-gray-200 rounded-md p-[2px] w-fit flex items-center">
-        <div
-          v-for="(item, index) in apartmentTab" :key="index"
-          class="text-center text-sm py-1 px-6 cursor-pointer"
-          :class="index === currentApartmentTab ? 'bg-primary-light2 border border-primary-light3 rounded-md text-primary' : 'text-gray71'"
-          @click="currentApartmentTab = index">
-          {{item}}
+    <UModal v-model:open="openCreateModal" title="View Booking" description="">
+      <template #body>
+        <div class="bg-gray-100/60 border border-gray-200 rounded-md p-[2px] w-fit flex items-center">
+          <div
+            v-for="(item, index) in apartmentTab" :key="index"
+            class="text-center text-sm py-1 px-6 cursor-pointer"
+            :class="index === currentApartmentTab ? 'bg-primary-light2 border border-primary-light3 rounded-md text-primary' : 'text-gray71'"
+            @click="currentApartmentTab = index">
+            {{item}}
+          </div>
         </div>
-      </div>
-      <div v-if="currentApartmentTab === 0" class="my-6">
-        <div class="mb-4">
-          <label for="ca-residence" class="block mb-1 text-sm font-medium text-gray-900 dark:text-white">Select a
-            residence</label>
-          <select
-            id="ca-residence"
-            v-model="apartmentForm.residence_id"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-2 focus:ring-primary-50 focus:border-primary block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-50 dark:focus:border-primary">
-            <option value="-">Select Residence</option>
-            <option
-              v-for="(item, index) in residenceStore.residences"
-              :key="index"
-              :value="item.id">{{item.name}}</option>
-          </select>
-        </div>
-        <div class="mb-4 grid grid-cols-2 gap-x-2">
-          <CustomInput
-            id="ca-name" v-model="apartmentForm.name" type="text"
-            label="Name"
-            placeholder="e.g Sandstone" required />
-          <div>
-            <label for="ca-apartmentType" class="block mb-1 text-sm font-medium text-gray-900 dark:text-white">Type</label>
+        <div v-if="currentApartmentTab === 0" class="my-6">
+          <div class="mb-4">
+            <label for="ca-residence" class="block mb-1 text-sm font-medium text-gray-900 dark:text-white">Select a
+              residence</label>
             <select
-              id="ca-apartmentType"
-              v-model="apartmentForm.type_id"
-              class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-2 focus:ring-primary-50 focus:border-primary block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-50 dark:focus:border-primary capitalize">
-              <option value="-">Select Apartment Type</option>
+              id="ca-residence"
+              v-model="apartmentForm.residence_id"
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-2 focus:ring-primary-50 focus:border-primary block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-50 dark:focus:border-primary">
+              <option value="-">Select Residence</option>
               <option
-                v-for="(item, index) in apartmentStore.apartmentTypes"
+                v-for="(item, index) in residenceStore.residences"
                 :key="index"
                 :value="item.id">{{item.name}}</option>
             </select>
           </div>
-        </div>
-        <div class="mb-4">
-          <label for="ca-description" class="block mb-1 text-sm font-medium text-gray-900 dark:text-white">About this
-            apartment</label>
-          <textarea
-            id="ca-description" v-model="apartmentForm.about" rows="4"
-            class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-50 focus:border-primary dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-50 dark:focus:border-primary"
-            placeholder="Write a very good description of this apartment..." />
-        </div>
-        <div class="mb-4">
-          <label class="block mb-1 text-sm font-medium text-gray-900 dark:text-white">Amenities</label>
-          <TagInput
-            :options="miscStore.amenities?.map(item => ({id: item?.id, label: item?.name, icon: item?.icon, value: item?.slug}))"
-            placeholder="Select Amenities"
-            @update:value="updateAmenities"
-          />
-        </div>
-        <div class="mb-4">
-          <CustomInput
-            id="ca-max_no_of_occupants" v-model="apartmentForm.max_no_of_occupants" type="number" label="Max.
-            Occupants"
-            placeholder="8" required />
-        </div>
-        <div class="mb-4 grid grid-cols-2 gap-x-2">
-          <div>
+          <div class="mb-4 grid grid-cols-2 gap-x-2">
             <CustomInput
-              id="ca-no_of_bedrooms" v-model="apartmentForm.no_of_bedrooms" type="number" label="No. of
-              Bedrooms"
-              placeholder="3" required />
+              id="ca-name" v-model="apartmentForm.name" type="text"
+              label="Name"
+              placeholder="e.g Sandstone" required />
+            <div>
+              <label for="ca-apartmentType" class="block mb-1 text-sm font-medium text-gray-900 dark:text-white">Type</label>
+              <select
+                id="ca-apartmentType"
+                v-model="apartmentForm.type_id"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-xs rounded-lg focus:ring-2 focus:ring-primary-50 focus:border-primary block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-50 dark:focus:border-primary capitalize">
+                <option value="-">Select Apartment Type</option>
+                <option
+                  v-for="(item, index) in apartmentStore.apartmentTypes"
+                  :key="index"
+                  :value="item.id">{{item.name}}</option>
+              </select>
+            </div>
           </div>
-          <div>
+          <div class="mb-4">
+            <label for="ca-description" class="block mb-1 text-sm font-medium text-gray-900 dark:text-white">About this
+              apartment</label>
+            <textarea
+              id="ca-description" v-model="apartmentForm.about" rows="4"
+              class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-50 focus:border-primary dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-50 dark:focus:border-primary"
+              placeholder="Write a very good description of this apartment..." />
+          </div>
+          <div class="mb-4">
+            <label class="block mb-1 text-sm font-medium text-gray-900 dark:text-white">Amenities</label>
+            <TagInput
+              :options="miscStore.amenities?.map(item => ({id: item?.id, label: item?.name, icon: item?.icon, value: item?.slug}))"
+              placeholder="Select Amenities"
+              @update:value="updateAmenities"
+            />
+          </div>
+          <div class="mb-4">
             <CustomInput
-              id="no_of_bathrooms" v-model="apartmentForm.no_of_bathrooms" type="number" label="No. of
-              Bathrooms"
-              placeholder="4" required />
+              id="ca-max_no_of_occupants" v-model="apartmentForm.max_no_of_occupants" type="number" label="Max.
+              Occupants"
+              placeholder="8" required />
+          </div>
+          <div class="mb-4 grid grid-cols-2 gap-x-2">
+            <div>
+              <CustomInput
+                id="ca-no_of_bedrooms" v-model="apartmentForm.no_of_bedrooms" type="number" label="No. of
+                Bedrooms"
+                placeholder="3" required />
+            </div>
+            <div>
+              <CustomInput
+                id="no_of_bathrooms" v-model="apartmentForm.no_of_bathrooms" type="number" label="No. of
+                Bathrooms"
+                placeholder="4" required />
+            </div>
           </div>
         </div>
-      </div>
-      <div v-if="currentApartmentTab === 1" class="my-6">
-        <div class="mb-4">
-          <CustomInput
-            id="ca-price" v-model="apartmentForm.price" type="text" label="Base Rate (NGN)"
-            placeholder="N100,000" required />
-        </div>
-        <div class="mb-4">
-          <CustomInput
-            id="ca-weekend-rate" v-model="apartmentForm.weekend_price" type="text" label="Weekend Rate (NGN)"
-            placeholder="N100,000" required />
-        </div>
-        <div class="mb-4">
-          <div class="flex items-center mb-4">
-            <input id="ca-party" v-model="apartmentForm.party" :checked="apartmentForm.party" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" >
-            <label for="ca-party" class="ms-2 text-xs font-medium text-gray-900 dark:text-gray-300">Allow Party/Event</label>
-          </div>
-          <CustomInput
-            v-if="apartmentForm.party"
-            id="ca-party-rate" v-model="apartmentForm.party_price" type="text" label="Party/Event Rate (NGN)"
-            placeholder="N100,000" required />
-        </div>
-        <div class="mb-4">
-          <CustomInput
-            id="ca-caution-fee" v-model="apartmentForm.caution_fee" type="text" label="Refundable Caution Fee (NGN)"
-            placeholder="N100,000" required />
-        </div>
-      </div>
-      <div v-if="currentApartmentTab === 2" class="my-6">
-        <div v-for="(_, index) in apartmentForm.los_discounts" :key="index" class="flex items-center justify-between">
-          <div class="w-[92%] mb-4 grid grid-cols-2 gap-x-2">
+        <div v-if="currentApartmentTab === 1" class="my-6">
+          <div class="mb-4">
             <CustomInput
-              :id="`ca-discount-min-nights-${index}`" v-model="apartmentForm.los_discounts[index].min_nights"
-              type="number" label="Minimum Nights"
-              placeholder="3" required />
+              id="ca-price" v-model="apartmentForm.price" type="text" label="Base Rate (NGN)"
+              placeholder="N100,000" required />
+          </div>
+          <div class="mb-4">
             <CustomInput
-              :id="`ca-discount-percent-${index}`" v-model="apartmentForm.los_discounts[index].discount_percentage"
-              type="number" label="Discount(%)"
-              placeholder="4" required />
+              id="ca-weekend-rate" v-model="apartmentForm.weekend_price" type="text" label="Weekend Rate (NGN)"
+              placeholder="N100,000" required />
           </div>
-          <div
-            class="-mb-[10px] p-1 rounded-full bg-gray-200 cursor-pointer"
-            @click="removeLosDiscount(index)">
-            <PhosphorIconTrash :size="20" />
+          <div class="mb-4">
+            <div class="flex items-center mb-4">
+              <input id="ca-party" v-model="apartmentForm.party" :checked="apartmentForm.party" type="checkbox" value="" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" >
+              <label for="ca-party" class="ms-2 text-xs font-medium text-gray-900 dark:text-gray-300">Allow Party/Event</label>
+            </div>
+            <CustomInput
+              v-if="apartmentForm.party"
+              id="ca-party-rate" v-model="apartmentForm.party_price" type="text" label="Party/Event Rate (NGN)"
+              placeholder="N100,000" required />
+          </div>
+          <div class="mb-4">
+            <CustomInput
+              id="ca-caution-fee" v-model="apartmentForm.caution_fee" type="text" label="Refundable Caution Fee (NGN)"
+              placeholder="N100,000" required />
           </div>
         </div>
-        <Button text="Add Discount Rule" class="bg-white" text-color="text-primary" @click="addLosDiscount" />
-        <div class="bg-primary-light2 text-sm py-4 px-3 rounded-lg mt-3">
-          Preview: Active Discounts
-          <p v-for="(item, index) in previewDiscounts" :key="index" class="text-gray71 text-xs">Stay {{item.min_nights}}+ nights>>>{{item.discount_percentage}}% off</p>
+        <div v-if="currentApartmentTab === 2" class="my-6">
+          <div v-for="(_, index) in apartmentForm.los_discounts" :key="index" class="flex items-center justify-between">
+            <div class="w-[92%] mb-4 grid grid-cols-2 gap-x-2">
+              <CustomInput
+                :id="`ca-discount-min-nights-${index}`" v-model="apartmentForm.los_discounts[index].min_nights"
+                type="number" label="Minimum Nights"
+                placeholder="3" required />
+              <CustomInput
+                :id="`ca-discount-percent-${index}`" v-model="apartmentForm.los_discounts[index].discount_percentage"
+                type="number" label="Discount(%)"
+                placeholder="4" required />
+            </div>
+            <div
+              class="-mb-[10px] p-1 rounded-full bg-gray-200 cursor-pointer"
+              @click="removeLosDiscount(index)">
+              <PhosphorIconTrash :size="20" />
+            </div>
+          </div>
+          <Button text="Add Discount Rule" class="bg-white" text-color="text-primary" @click="addLosDiscount" />
+          <div class="bg-primary-light2 text-sm py-4 px-3 rounded-lg mt-3">
+            Preview: Active Discounts
+            <p v-for="(item, index) in previewDiscounts" :key="index" class="text-gray71 text-xs">Stay {{item.min_nights}}+ nights>>>{{item.discount_percentage}}% off</p>
+          </div>
         </div>
-      </div>
-      <div class="flex gap-x-3">
-        <Button :text="currentApartmentTab > 0 ? 'Go back' : 'Cancel'" class="bg-white" text-color="text-primary" @click="currentApartmentTab--" />
-        <Button :text="currentApartmentTab < 2 ? 'Continue' : 'Add Apartment'" :loading="formLoading" :disabled="!apartmentFormReady || formLoading" @click="handleCreateApartment" />
-      </div>
-    </FormModal>
+        <div class="flex gap-x-3">
+          <Button :text="currentApartmentTab > 0 ? 'Go back' : 'Cancel'" class="bg-white" text-color="text-primary" @click="currentApartmentTab--" />
+          <Button :text="currentApartmentTab < 2 ? 'Continue' : 'Add Apartment'" :loading="formLoading" :disabled="!apartmentFormReady || formLoading" @click="handleCreateApartment" />
+        </div>
+      </template>
+    </UModal>
     <FormModal uid="view-apartment-modal" :title="selectedApartment?.name">
       <template #icon>
         <PhosphorIconHouse />
@@ -522,6 +520,7 @@
     ],
   });
 
+  const openCreateModal = ref(false);
   const selectedApartment = ref(null);
   const selectedApartmentTab = ref(0);
   const selectedApartmentShowPhotoUpload = ref(false);
@@ -637,6 +636,7 @@
         description: 'This apartment was created successfully',
       })
       formLoading.value = false;
+      openCreateModal.value = false;
     }
   };
 </script>

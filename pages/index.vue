@@ -75,7 +75,21 @@
     <UModal v-model:open="openViewModal" title="View Booking" description="">
       <template #body>
         <BookingInfo
-          :booking-info="newBookingData" />
+          :booking-info="viewedBookingData" />
+        <div class="flex items-center mt-3 gap-x-2">
+          <button
+            class="w-full bg-blue-200 border border-blue-300 text-black justify-center flex items-center font-medium rounded-lg text-xs px-5 py-2 mb-2 focus:outline-none">
+            View Invoice
+          </button>
+          <button
+            class="w-full bg-white border border-gray-200 justify-center flex items-center font-medium rounded-lg text-xs px-5 py-2 mb-2 focus:outline-none">
+            Cancel booking
+          </button>
+          <button
+            class="w-full bg-primary border border-primary text-white justify-center flex items-center font-medium rounded-lg text-xs px-5 py-2 mb-2 focus:outline-none">
+            Extend Stay
+          </button>
+        </div>
       </template>
     </UModal>
 
@@ -84,7 +98,8 @@
         <BookingCreate
           :booking-data="newBookingData"
           :residences-data="residenceStore.residences"
-          :apartments-data="apartmentStore.apartments" />
+          :apartments-data="apartmentStore.apartments"
+          :callback="handleCloseBookingModal" />
       </template>
     </UModal>
   </div>
@@ -104,6 +119,7 @@ const newBookingData = reactive({
   apartment_id: null,
   residence_id: null,
 });
+const viewedBookingData = reactive({});
 
 onMounted(() => {
   bookingStore.fetchReservations({
@@ -122,16 +138,33 @@ const handleOpenBookingModal = (day, residence) => {
   newBookingData.check_out = day.add(1, "days").format("YYYY-MM-DD");
   newBookingData.apartment_id = residence.apartment_id;
   newBookingData.residence_id = residence.residence_id;
-  // toast.add({
-  //   title: 'Event added to calendar',
-  //   description: 'This event is scheduled for ${formattedDate}.',
-  //   icon: 'i-lucide-calendar-days'
-  // })
 }
 const handleViewBookingModal = (reservation) => {
-  console.log(reservation)
   openViewModal.value = !openViewModal.value;
+  Object.assign(viewedBookingData, reservation);
 }
+const handleCloseBookingModal = () => {
+  bookingStore.fetchReservations({
+    start_date: dayjs().subtract(6, "months").format("YYYY-MM-DD"),
+    end_date: dayjs().add(6, "months").format("YYYY-MM-DD"),
+  });
+  openModal.value = false;
+};
+const handleFetchInvoice = async (booking_id) => {
+  try {
+    const response = await bedrockServiceClient({
+      url: `/admin/booking/invoice?booking_id=${booking_id}`,
+      method: "get",
+    });
+  } catch(err) {
+    toast.add({
+      title: "Oops! Something went wrong",
+      description: "Unfortunately, we were not able to generate the invoice for this booking. Please reach out to our support team",
+      icon: "i-ph-smiley-sad",
+      color: "error"
+    })
+  }
+};
 
 const { timelineDays, currentDate, daysToShow } = useReservations()
 

@@ -121,8 +121,9 @@
     <div v-else-if="bookingTab === 1" class="mb-6">
       <BookingInfo :booking-info="bookingInfo" />
     </div>
-    <div class="w-1/2 flex justify-self-end">
-      <Button text="View Summary" :loading="formLoading" :disabled="!formReady || formLoading" @click="handleBookingAction" />
+    <div class="flex gap-x-2">
+      <Button v-if="bookingTab > 0" text="Go back" class="bg-white border border-gray-200" text-color="text-black" @click="bookingTab--" />
+      <Button :text="bookingTab === 0 ? 'View Summary' : 'Create Booking'" :loading="formLoading" :disabled="!formReady || formLoading" @click="handleBookingAction" />
     </div>
   </div>
 </template>
@@ -144,6 +145,7 @@
     residencesData: Array,
     apartmentsData: Array,
     bookingData: Object,
+    callback: Function,
   });
 
   const bookingTab = ref(0);
@@ -195,14 +197,15 @@
   const handleBookingAction = async () => {
     try {
       if (bookingTab.value === 0) {
+        formLoading.value = true;
         const response = await bedrockServiceClient({
           url: `/admin/booking/summary`,
           method: "post",
           data: bookingForm,
         });
+        formLoading.value = false;
         const { data } = response.data;
         bookingTab.value = 1;
-        console.log(data);
         Object.assign(
           bookingInfo,
           {
@@ -223,16 +226,27 @@
             tax: data.tax,
             total_price: data.total_price,
             discount: data.discount_amount,
-            nightly_breakdown: data.nightly_breakdown
+            nightly_breakdown: data.nightly_breakdown,
           }
         );
-        // if (!bookingStore.bookingSummary) {}
       } else if (bookingTab.value === 1) {
-        bookingStore.createBooking();
+        formLoading.value = true;
+        await bookingStore.createBooking(bookingForm);
+        formLoading.value = false;
+        toast.add({
+          title: "Yaay! Booking succesfully created",
+          description: "This booking was successfully registered. Kindly advise the guest to proceed with payment if not settled yet.",
+          icon: "i-ph-calendar-check",
+          color: "success"
+        });
+        callback();
       }
     } catch (err) {
       toast.add({
-        title: "Could not complete operation"
+        title: "Oops! Something went wrong",
+        description: "Unfortunately, we were not able to proceed with this booking. Please reach out to our support team",
+        icon: "i-ph-smiley-sad",
+        color: "error"
       })
     }
   };

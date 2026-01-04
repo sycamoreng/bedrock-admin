@@ -31,14 +31,5 @@ export const useBookingStore = defineStore("bookingStore", {
       const { data } = response.data;
       this.reservations = data;
     },
-    async generateBookingSummary(body: any) {
-      const response = await bedrockServiceClient({
-        url: `/admin/booking/summary`,
-        method: "post",
-        data: body,
-      });
-      const { data } = response.data;
-      this.bookingSummary = data;
-    },
   },
 });

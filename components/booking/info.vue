@@ -49,6 +49,10 @@
         <p class="text-xs text-gray-500">Nights</p>
         <p class="text-xs text-black font-medium">{{bookingInfo?.nights}} night(s)</p>
       </div>
+      <div v-if="bookingInfo.status" class="flex justify-between items-center">
+        <p class="text-xs text-gray-500">Status</p>
+        <p class="text-xxs font-medium px-2 py-0.5 rounded-full capitalize" :class="statusChecker.classes">{{statusChecker?.status}}</p>
+      </div>
     </div>
     <div class="bg-white border-[0.5px] border-gray-200 p-4 rounded-lg flex flex-col gap-y-2 mt-3">
       <p class="font-medium text-sm">Payment</p>
@@ -77,7 +81,40 @@
 </template>
 
 <script setup>
-  defineProps({
+  const props = defineProps({
     bookingInfo: Object,
   });
+
+  const statusChecker = computed(() => {
+    const bookingInfo = props.bookingInfo;
+
+    if (!bookingInfo.status) return null;
+
+    if (bookingInfo.status === 'confirmed') {
+      return {
+        status: bookingInfo.status,
+        classes: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
+      }
+    } else if (bookingInfo.status === 'pending') {
+      return {
+        status: bookingInfo.status,
+        classes: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300",
+      }
+    } else if (bookingInfo.status === 'checked_in') {
+      return {
+        status: "Checked in",
+        classes: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
+      }
+    } else if (bookingInfo.status === 'checked_out') {
+      return {
+        status: "Checked out",
+        classes: "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-300",
+      }
+    } else {
+      return {
+        status: "unavailable",
+        classes: "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300",
+      }
+    }
+  })
 </script>
